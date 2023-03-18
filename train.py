@@ -1,5 +1,7 @@
 import pandas as pd
 from prophet import Prophet
+import pickle
+
 
 
 def train_model(data, holidays):
@@ -62,3 +64,6 @@ def train_model(data, holidays):
 
     model.fit(df)
     print("Model training completed")
+
+    #update from sudharaka
+    pickle.dump(model,open('model.pkl', 'wb'))

@@ -1,4 +1,7 @@
+import pickle
+
 import train
+import predict
 
 
 def train_console():
@@ -17,7 +20,23 @@ def train_console():
 
 
 def predict_console():
-    pass
+    print("___________________________________________________________")
+    print("Ready to make predictions")
+    isNotValid = True
+    days = 0
+
+    while (isNotValid):
+        try:
+            print('Enter for how many days you need the forecast :')
+            days = int(input())
+            isNotValid = False
+
+        except:
+            print('Enter a valid input....')
+
+    model = pickle.load(open('model.pkl', 'rb'))
+    predict.make_predictions(days,model)
+
 
 
 def switch_console(option):
