@@ -2,6 +2,7 @@ import pickle
 
 import train
 import predict
+import learn
 
 
 def train_console():
@@ -35,8 +36,22 @@ def predict_console():
             print('Enter a valid input....')
 
     model = pickle.load(open('model.pkl', 'rb'))
-    predict.make_predictions(days,model)
+    predict.make_predictions(days, model)
 
+
+def learn_console():
+    print("___________________________________________________________")
+    print("Re-train the model with new data")
+    print("___________________________________________________________")
+    print("TODO : Copy your data files to data folder")
+    print("___________________________________________________________")
+    old_data = input("Enter your old data file name (relative) : ")
+    new_data = input("Enter your new data file name (relative) : ")
+
+    old_data = "data/" + old_data
+    new_data = "data/" + new_data
+
+    learn.learn(old_data, new_data)
 
 
 def switch_console(option):
@@ -44,6 +59,8 @@ def switch_console(option):
         train_console()
     elif option == 2:
         predict_console()
+    elif option == 3:
+        learn_console()
     else:
         print("Not a valid option")
 
@@ -53,5 +70,6 @@ def welcome_screen():
     print("Options : ")
     print("     1 - train the model")
     print("     2 - predict")
+    print("     3 - learn")
     option = int(input("What do you want to do (enter the number) :"))
     switch_console(option)

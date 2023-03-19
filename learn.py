@@ -1,3 +1,5 @@
+import pickle
+
 import pandas as pd
 from matplotlib import pyplot
 from prophet import Prophet
@@ -20,46 +22,46 @@ def warm_start_params(m):
     return res
 
 
-df_original_data = pd.read_csv("data/df3.csv")
-df_retrain_data = pd.read_csv("data/df2.csv")
+def learn(old_data, new_data):
+    df_original_data = pd.read_csv(old_data)
+    df_retrain_data = pd.read_csv(new_data)
 
-m1 = Prophet().fit(df_original_data)  # Fitting from scratch
+    m1 = Prophet().fit(df_original_data)  # Fitting from scratch
 
-# diagnostics
-df_cv = cross_validation(m1, initial='730 days', period='180 days', horizon='365 days')
-df_p = performance_metrics(df_cv)
+    # diagnostics
+    df_cv = cross_validation(m1, initial='730 days', period='180 days', horizon='365 days')
+    df_p = performance_metrics(df_cv)
 
-print("df_cv")
-print(df_cv.head())
-print("df_p")
-print(df_p.head())
+    # print("df_cv")
+    # print(df_cv.head())
+    # print("df_p")
+    # print(df_p.head())
 
-# you can load the model from json
-# m1 = model_from_json(model_to_json(m1))
+    # m1 = pickle.load(open('model.pkl', 'rb'))
+    print("Previous model loaded")
+    m2 = Prophet().fit(df_retrain_data, init=warm_start_params(m1))  # Adding the last day, warm-starting from m1
 
-print("Model 1 trained")
+    future = m2.make_future_dataframe(periods=12)
+    forecast = m2.predict(future)
 
-m2 = Prophet().fit(df_retrain_data, init=warm_start_params(m1))  # Adding the last day, warm-starting from m1
+    df = df_original_data.append(df_retrain_data)
 
-# forecast
-future = m2.make_future_dataframe(periods=12)
-forecast = m2.predict(future)
+    # diagnostics
+    df_cv = cross_validation(m2, initial='130 days', period='45 days', horizon='65 days')
+    df_p = performance_metrics(df_cv)
 
-df = df_original_data.append(df_retrain_data)
+    # print("df_cv")
+    # print(df_cv.head())
+    # print("df_p")
+    # print(df_p.head())
 
-# diagnostics
-df_cv = cross_validation(m2, initial='130 days', period='45 days', horizon='65 days')
-df_p = performance_metrics(df_cv)
+    # plot forecast
+    m2.plot(forecast)
+    pyplot.show()
 
-print("df_cv")
-print(df_cv.head())
-print("df_p")
-print(df_p.head())
+    # plot forecast components
+    m2.plot_components(forecast)
+    pyplot.show()
 
-# plot forecast
-m2.plot(forecast)
-pyplot.show()
-
-# plot forecast components
-m2.plot_components(forecast)
-pyplot.show()
+    pickle.dump(m2, open('new_model.pkl', 'wb'))
+    print("New model saved as 'new_model.pkl ")
