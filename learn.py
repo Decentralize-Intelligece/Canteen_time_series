@@ -23,21 +23,21 @@ def warm_start_params(m):
 df_original_data = pd.read_csv("data/df3.csv")
 df_retrain_data = pd.read_csv("data/df2.csv")
 
-m1 = Prophet().fit(df_original_data)  # Fitting from scratch
-
-# diagnostics
-df_cv = cross_validation(m1, initial='730 days', period='180 days', horizon='365 days')
-df_p = performance_metrics(df_cv)
-
-print("df_cv")
-print(df_cv.head())
-print("df_p")
-print(df_p.head())
-
-# you can load the model from json
-# m1 = model_from_json(model_to_json(m1))
-
-print("Model 1 trained")
+# m1 = Prophet().fit(df_original_data)  # Fitting from scratch
+#
+# # diagnostics
+# df_cv = cross_validation(m1, initial='730 days', period='180 days', horizon='365 days')
+# df_p = performance_metrics(df_cv)
+#
+# print("df_cv")
+# print(df_cv.head())
+# print("df_p")
+# print(df_p.head())
+#
+# # you can load the model from json
+#  m1 = model_from_json(model_to_json(m1))
+#
+# print("Model 1 trained")
 
 m2 = Prophet().fit(df_retrain_data, init=warm_start_params(m1))  # Adding the last day, warm-starting from m1
 
