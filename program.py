@@ -17,10 +17,12 @@ def train_console():
     data = "data/" + data
     holidays = "data/" + holidays
 
-    train.train_model(data, holidays)
+    df = train.train_model(data, holidays)
+
+    return df
 
 
-def predict_console():
+def predict_console(df):
     print("___________________________________________________________")
     print("Ready to make predictions")
     isNotValid = True
@@ -36,7 +38,11 @@ def predict_console():
             print('Enter a valid input....')
 
     model = pickle.load(open('model.pkl', 'rb'))
+
+    predict.make_predictions(days,model,df)
+
     predict.make_predictions(days, model)
+
 
 
 def learn_console():
