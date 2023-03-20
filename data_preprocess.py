@@ -40,6 +40,29 @@ def json_to_csv(json_file_path):
         # Sort the DataFrame by the 'date' column
         df = df.sort_values(by='ds')
 
+        #*******************
+
+        # Set 'datetime' as the index of the DataFrame
+        df = df.set_index('ds')
+
+        # Create a new DataFrame with a datetime range that spans the entire time period
+        date_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='15T')
+        new_df = pd.DataFrame(index=date_range)
+
+        # Join the new DataFrame with the original DataFrame on the datetime index
+        df = new_df.join(df, how='left')
+
+        # Fill missing sales values with zeros
+        df['y'] = df['y'].fillna(0)
+
+        # Resample the DataFrame with a 15-min frequency and fill missing values with zero sales
+        # df = df.resample('15T').fillna(0)
+
+        # Reset the index of the DataFrame
+        df = df.reset_index()
+
+        # *******************
+
         # save the dataframe as a csv file
         df.to_csv('processed_data.csv', index=False)
 
@@ -49,5 +72,7 @@ def json_to_csv(json_file_path):
 if __name__ == "__main__":
     json_file_path = input("Enter the path to the JSON file: ")
     csv_file_path = json_to_csv(json_file_path)
+
+# D:\Git Hub Projects\Time Series Project\Project\data\unprocessed_data\interval_counts.json
 
 
