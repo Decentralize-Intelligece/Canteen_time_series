@@ -61,7 +61,7 @@ def json_to_csv(json_file_path):
         # Reset the index of the DataFrame
         df = df.reset_index()
 
-        # *******************
+        # *********************
 
         # save the dataframe as a csv file
         df.to_csv('processed_data.csv', index=False)
