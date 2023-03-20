@@ -25,7 +25,7 @@ def make_predictions(days,model,df):
     # use the model to make a forecast
     forecast = model.predict(future)
 
-
+    # forecast = forecast[len(forecast)-24*4*days -1 : len(forecast) - 1]
 
 
 
