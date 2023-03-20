@@ -45,7 +45,7 @@ def predict_console(df):
 
     predict.make_predictions(days,model,df)
 
-    predict.make_predictions(days, model)
+    # predict.make_predictions(days, model)
 
 
 
@@ -68,7 +68,7 @@ def switch_console(option):
     if option == 1:
         train_console()
     elif option == 2:
-        predict_console()
+        predict_console(DF)
     elif option == 3:
         learn_console()
     else:
