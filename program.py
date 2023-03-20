@@ -3,9 +3,10 @@ import pickle
 import train
 import predict
 import learn
+import pandas as pd
 
 
-DF=1
+# DF=[]
 
 def train_console():
     print("___________________________________________________________")
@@ -20,15 +21,32 @@ def train_console():
     holidays = "data/" + holidays
 
     df = train.train_model(data, holidays)
-    global DF
-    DF = df
+    # global DF
+    # DF = df
 
     return df
 
 
-def predict_console(df):
+def predict_console():
     print("___________________________________________________________")
     print("Ready to make predictions")
+    print("___________________________________________________________")
+    print("TODO : Copy your data files to data folder")
+    data = input("Enter the name of the data file that was used to train the model (relative) : ")
+
+    path = "data/" + data
+
+    pd.set_option('display.max_columns', None)
+
+    # load the data/transposed first column
+    df = pd.read_csv(path)
+    print("Data Loaded")
+
+    # keep only the datetime and sales columns
+    df = df[["ds", "y"]]
+    # datetime column to datetime type
+    df["ds"] = pd.to_datetime(df["ds"])
+
     isNotValid = True
     days = 0
 
@@ -68,7 +86,7 @@ def switch_console(option):
     if option == 1:
         train_console()
     elif option == 2:
-        predict_console(DF)
+        predict_console()
     elif option == 3:
         learn_console()
     else:
