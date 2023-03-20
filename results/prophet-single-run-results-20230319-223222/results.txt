@@ -1,0 +1,36 @@
+
+
+============================================================
+Iteration : 20230319-223222
+Datetime : 20230319-223222
+
+Params: 
+n_changepoints: 50
+changepoint_range: 0.8
+yearly_seasonality: True
+weekly_seasonality: True
+daily_seasonality: True
+holidays:        holiday                  ds  lower_window  upper_window
+0      playoff 2020-04-20 00:00:00             0             1
+1      playoff 2020-04-20 00:15:00             0             1
+2      playoff 2020-04-20 00:30:00             0             1
+3      playoff 2020-04-20 00:45:00             0             1
+4      playoff 2020-04-20 01:00:00             0             1
+...        ...                 ...           ...           ...
+51835  playoff 2022-12-24 22:45:00             0             1
+51836  playoff 2022-12-24 23:00:00             0             1
+51837  playoff 2022-12-24 23:15:00             0             1
+51838  playoff 2022-12-24 23:30:00             0             1
+51839  playoff 2022-12-24 23:45:00             0             1
+
+[51840 rows x 4 columns]
+seasonality_mode: multiplicative
+seasonality_prior_scale: 500.0
+holidays_prior_scale: 500.0
+changepoint_prior_scale: 1
+mcmc_samples: 0
+interval_width: 0.8
+uncertainty_samples: 2000
+stan_backend: None
+
+

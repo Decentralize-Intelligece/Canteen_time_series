@@ -4,6 +4,8 @@ import train
 import predict
 
 
+DF=1
+
 def train_console():
     print("___________________________________________________________")
     print("Training the model")
@@ -17,6 +19,8 @@ def train_console():
     holidays = "data/" + holidays
 
     df = train.train_model(data, holidays)
+    global DF
+    DF = df
 
     return df
 
