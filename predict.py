@@ -29,16 +29,7 @@ def make_predictions(days,model,df):
 
 
 
-    print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
 
-    r2_score(df["y"], forecast["yhat"][:len(df["y"])])
-    mean_squared_error(df["y"], forecast["yhat"][:len(df["y"])])
-    mean_absolute_error(df["y"], forecast["yhat"][:len(df["y"])])
-
-    print("Metrics")
-    print("R2: ", r2_score(df["y"], forecast["yhat"][:len(df["y"])]))
-    print("MSE: ", mean_squared_error(df["y"], forecast["yhat"][:len(df["y"])]))
-    print("MAE: ", mean_absolute_error(df["y"], forecast["yhat"][:len(df["y"])]))
 
     # plot forecast
     model.plot(forecast)
@@ -57,7 +48,7 @@ def make_predictions(days,model,df):
     #log files
 
     iteration = str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
-    folder_name = "prophet-single-run-results-" + str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
+    folder_name = "predict-" + str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
 
     # iteration folder path
     iteration_path = "results/" + folder_name + "/" + iteration
@@ -67,26 +58,6 @@ def make_predictions(days,model,df):
     forecast.to_csv(iteration_path + "/forecast-" + iteration + ".csv", index=False)
 
     forecast.to_csv(iteration_path + "/forecast-" + iteration + ".csv", index=False)
-
-    r2_score(df["y"], forecast["yhat"][:len(df["y"])])
-    mean_squared_error(df["y"], forecast["yhat"][:len(df["y"])])
-    mean_absolute_error(df["y"], forecast["yhat"][:len(df["y"])])
-
-    print("Metrics")
-    print("R2: ", r2_score(df["y"], forecast["yhat"][:len(df["y"])]))
-    print("MSE: ", mean_squared_error(df["y"], forecast["yhat"][:len(df["y"])]))
-    print("MAE: ", mean_absolute_error(df["y"], forecast["yhat"][:len(df["y"])]))
-
-    # Metrics to log
-    with open("results/" + folder_name + "/results.txt", "a") as myfile:
-        myfile.write("\n\nMetrics\n")
-        myfile.write("R2: ")
-        myfile.write(str(r2_score(df["y"], forecast["yhat"][:len(df["y"])])))
-        myfile.write("\nMSE: ")
-        myfile.write(str(mean_squared_error(df["y"], forecast["yhat"][:len(df["y"])])))
-        myfile.write("\nMAE: ")
-        myfile.write(str(mean_absolute_error(df["y"], forecast["yhat"][:len(df["y"])])))
-        myfile.write("\n\n")
 
     # plot forecast
     model.plot(forecast)
@@ -103,6 +74,8 @@ def make_predictions(days,model,df):
     a = add_changepoints_to_plot(fig.gca(), model, forecast)
     # save plot to image
     pyplot.savefig(iteration_path + "/changepoints-" + iteration + ".png")
+
+    pickle.dump(model, open('model.pkl', 'wb'))
 
 
 

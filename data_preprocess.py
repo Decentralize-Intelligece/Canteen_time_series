@@ -2,6 +2,7 @@ import json
 import csv
 import pandas as pd
 from datetime import datetime
+import os
 
 datetime_format = '%Y-%m-%d %H:%M:%S'
 threshold = 900  # in seconds
@@ -25,18 +26,13 @@ def find_csv_breaking_points(filename, datetime_format, threshold):
     return breaking_points
 
 
-bp_indices = find_csv_breaking_points(filename, datetime_format, threshold)
-if len(bp_indices) == 0:
-    print("The dataset is continuous")
-else:
-    print("The dataset has", len(bp_indices), "breaking points at indices:", bp_indices)
-
-
 def json_to_csv(json_file_path):
+    print("Converting JSON to CSV...")
     # Load the JSON data
     with open(json_file_path) as json_file:
         data = json.load(json_file)
 
+    print("Processing data...")
     # Open the CSV file for writing
     with open('data.csv', mode='w') as csv_file:
         # Create a CSV writer object
@@ -87,16 +83,24 @@ def json_to_csv(json_file_path):
         # Reset the index of the DataFrame
         df = df.reset_index()
 
-        # *********************
+        # create results folder
+        if not os.path.exists("data"):
+            os.makedirs("data")
+
+        folder_name = "data-" + str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
+
+        # create a folder for the results
+        if not os.path.exists("data/" + folder_name):
+            os.mkdir("data/" + folder_name)
 
         # save the dataframe as a csv file
-        df.to_csv('processed_data.csv', index=False)
+        df.to_csv("data/" + folder_name + "/processed_data.csv", index=False)
 
-        print(df.head(1000))
+        bp_indices = find_csv_breaking_points("data/" + folder_name + "/processed_data.csv", datetime_format, threshold)
+        if len(bp_indices) == 0:
+            print("The dataset is continuous")
+        else:
+            print("The dataset has", len(bp_indices), "breaking points at indices:", bp_indices)
 
-        find_csv_breaking_points('processed_data.csv', datetime_format, threshold)
+        return folder_name + "/processed_data.csv"
 
-
-if __name__ == "__main__":
-    json_file_path = input("Enter the path to the JSON file: ")
-    csv_file_path = json_to_csv(json_file_path)

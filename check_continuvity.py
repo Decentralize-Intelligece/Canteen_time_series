@@ -4,7 +4,8 @@ import pandas as pd
 from datetime import datetime
 from pathlib import Path
 
-filename = "D:\Git Hub Projects\Time Series Project\Project\process_data\processed_data.csv"
+filename = r"C:\Users\timni\PycharmProjects\Canteen_time_series\processed_data.csv"
+file_2  = r"D:\Projects\Canteen Time Series\canteens\canteens\canteenW\preparedData\interval_counts.json"
 datetime_format = '%Y-%m-%d %H:%M:%S'
 threshold = 900 # in seconds
 

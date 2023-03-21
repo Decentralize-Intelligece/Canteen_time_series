@@ -1,6 +1,5 @@
 import pickle
 
-import check_continuvity
 import train
 import predict
 import learn
@@ -11,10 +10,8 @@ import pandas as pd
 
 
 
-# DF=[]
-
 def train_console():
-    print("___________________________________________________________")
+    print("\n\n___________________________________________________________")
     print("Training the model")
     print("___________________________________________________________")
     print("TODO : Copy your data file and holidays file to data folder")
@@ -33,7 +30,7 @@ def train_console():
 
 
 def predict_console():
-    print("___________________________________________________________")
+    print("\n\n___________________________________________________________")
     print("Ready to make predictions")
     print("___________________________________________________________")
     print("TODO : Copy your data files to data folder")
@@ -66,34 +63,39 @@ def predict_console():
 
     model = pickle.load(open('model.pkl', 'rb'))
 
-    predict.make_predictions(days,model,df)
+    predict.make_predictions(days, model, df)
 
     # predict.make_predictions(days, model)
 
 
-
 def learn_console():
-    print("___________________________________________________________")
+    print("\n\n___________________________________________________________")
     print("Re-train the model with new data")
     print("___________________________________________________________")
     print("TODO : Copy your data files to data folder")
     print("___________________________________________________________")
     old_data = input("Enter your old data file name (relative) : ")
     new_data = input("Enter your new data file name (relative) : ")
+    holidays = input("Enter your holidays file name (relative) : ")
 
     old_data = "data/" + old_data
     new_data = "data/" + new_data
+    holidays = "data/" + holidays
 
-    learn.learn(old_data, new_data)
+    model = pickle.load(open('model.pkl', 'rb'))
+
+    learn.learn(old_data, new_data, holidays, model)
+
 
 def process_console():
-    json_file_path = input("Enter the path to the JSON file: ")
+    print("\n\n___________________________________________________________")
+    print("Ready to process data")
+    print("___________________________________________________________")
+    print("TODO : Enter the path to the JSON file:", end=" ")
+    json_file_path = input()
     csv_file_path = json_to_csv(json_file_path)
-    datetime_format = '%Y-%m-%d %H:%M:%S'
-    threshold = 900  # in seconds
 
-    breakpoints = check_continuvity.find_csv_breaking_points(csv_file_path,datetime_format,threshold)
-
+    print("Done! The processed data is saved in the folder:" + csv_file_path)
 
 
 def switch_console(option):
@@ -103,10 +105,18 @@ def switch_console(option):
         predict_console()
     elif option == 3:
         learn_console()
-    elif option ==4:
+    elif option == 4:
         process_console()
+    elif option == 5:
+        exit_console()
     else:
         print("Not a valid option")
+
+
+def exit_console():
+    print("___________________________________________________________")
+    print("Exiting the program")
+    print("___________________________________________________________")
 
 
 def welcome_screen():
@@ -116,5 +126,6 @@ def welcome_screen():
     print("     2 - predict")
     print("     3 - learn")
     print("     4 - preprocess data")
+    print("     5 - exit")
     option = int(input("What do you want to do (enter the number) :"))
     switch_console(option)
