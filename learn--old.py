@@ -1,8 +1,8 @@
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot
 from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
-import numpy as np
 
 
 def warm_start_params(m):

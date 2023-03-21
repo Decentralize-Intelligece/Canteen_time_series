@@ -1,9 +1,7 @@
 import program
 
-over = True
-
 if __name__ == '__main__':
-    while over:
+    while True:
         try:
             program.welcome_screen()
         except Exception as e:

@@ -1,8 +1,9 @@
-import json
 import csv
-import pandas as pd
-from datetime import datetime
+import json
 import os
+from datetime import datetime
+
+import pandas as pd
 
 datetime_format = '%Y-%m-%d %H:%M:%S'
 threshold = 900  # in seconds
@@ -28,79 +29,73 @@ def find_csv_breaking_points(filename, datetime_format, threshold):
 
 def json_to_csv(json_file_path):
     print("Converting JSON to CSV...")
-    # Load the JSON data
+    # Load the JSON data to dataframes
     with open(json_file_path) as json_file:
         data = json.load(json_file)
 
     print("Processing data...")
-    # Open the CSV file for writing
-    with open('data.csv', mode='w') as csv_file:
-        # Create a CSV writer object
-        writer = csv.writer(csv_file)
+    # data to dataframe
+    df = pd.DataFrame(data)
+    # transpose the dataframe
+    df = df.transpose()
 
-        # Write the header row
-        writer.writerow(['date', 'sales', 'time', 'weekday', 'holiday'])
+    # save to csv
+    df.to_csv("data.csv", header=False)
 
-        # Write each row of data
-        for date, values in data.items():
-            writer.writerow([date, values['sales'], values['time'], values['weekday'], values['holiday']])
+    # read the csv file
+    df = pd.read_csv("data.csv", header=None)
 
-        df = pd.read_csv('data.csv')
+    # rename the columns
+    df = df.rename(columns={0: 'ds', 1: 'y', 2: 'time', 3: 'weekday', 4: 'holiday'})
 
-        # keep only the datetime and sales columns
-        df = df[["date", "sales"]]
+    # keep only first two columns
+    df = df.iloc[:, :2]
 
-        # datetime column to datetime type
-        df["date"] = pd.to_datetime(df["date"])
+    # ds to datetime type
+    df["ds"] = pd.to_datetime(df["ds"])
 
-        # rename the columns
-        df.columns = ["ds", "y"]
+    print("Sorting data...")
+    # sort the dataframe by ds
+    df = df.sort_values(by=['ds'])
 
-        # Reset the index of the DataFrame
-        df = df.reset_index(drop=True)
+    # reset the index
+    df = df.reset_index(drop=True)
 
-        # Sort the DataFrame by the 'date' column
-        df = df.sort_values(by='ds')
+    # Create a new DataFrame with a datetime range that spans the entire time period
+    # df start date
+    start_date = df['ds'].min()
+    end_date = df['ds'].max()
 
-        # *******************
+    # create a new dataframe from start date to end date with 15 minutes interval
+    new_df = pd.DataFrame(pd.date_range(start_date, end_date, freq='15min'), columns=['ds'])
 
-        # Set 'datetime' as the index of the DataFrame
-        df = df.set_index('ds')
+    # Fill new_df values from df
+    new_df = new_df.merge(df, on='ds', how='left')
 
-        # Create a new DataFrame with a datetime range that spans the entire time period
-        date_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='15T')
-        new_df = pd.DataFrame(index=date_range)
+    # Fill missing sales values with zeros no decimal
+    new_df['y'] = new_df['y'].fillna(0).astype(int)
 
-        # Join the new DataFrame with the original DataFrame on the datetime index
-        df = new_df.join(df, how='left')
+    # save the dataframe as a csv file
+    new_df.to_csv("Filled.csv", index=False)
 
-        # Fill missing sales values with zeros
-        df['y'] = df['y'].fillna(0)
+    # create results folder
+    if not os.path.exists("data"):
+        os.makedirs("data")
 
-        # Resample the DataFrame with a 15-min frequency and fill missing values with zero sales
-        # df = df.resample('15T').fillna(0)
+    folder_name = "data-" + str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
 
-        # Reset the index of the DataFrame
-        df = df.reset_index()
+    # create a folder for the results
+    if not os.path.exists("data/" + folder_name):
+        os.mkdir("data/" + folder_name)
 
-        # create results folder
-        if not os.path.exists("data"):
-            os.makedirs("data")
+    # save the dataframe as a csv file
+    new_df.to_csv("data/" + folder_name + "/processed_data.csv", index=False)
+    new_df.to_csv("data/processed_data.csv", index=False)
 
-        folder_name = "data-" + str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
+    bp_indices = find_csv_breaking_points("data/" + folder_name + "/processed_data.csv", datetime_format, threshold)
+    if len(bp_indices) == 0:
+        print("\nThe dataset is continuous")
+    else:
+        print("\nThe dataset has", len(bp_indices), "breaking points at indices:", bp_indices)
 
-        # create a folder for the results
-        if not os.path.exists("data/" + folder_name):
-            os.mkdir("data/" + folder_name)
-
-        # save the dataframe as a csv file
-        df.to_csv("data/" + folder_name + "/processed_data.csv", index=False)
-
-        bp_indices = find_csv_breaking_points("data/" + folder_name + "/processed_data.csv", datetime_format, threshold)
-        if len(bp_indices) == 0:
-            print("The dataset is continuous")
-        else:
-            print("The dataset has", len(bp_indices), "breaking points at indices:", bp_indices)
-
-        return folder_name + "/processed_data.csv"
-
+    return folder_name + "/processed_data.csv"

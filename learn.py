@@ -1,22 +1,13 @@
+import os
 import pickle
 
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot
 from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
-import numpy as np
-import os
-
-import pandas as pd
-from matplotlib import pyplot
-from prophet import Prophet
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from prophet.serialize import model_to_json, model_from_json
-from prophet.diagnostics import cross_validation, performance_metrics
-import itertools
-import numpy as np
-import os
 from prophet.plot import add_changepoints_to_plot
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 
 def warm_start_params(m):
@@ -34,34 +25,9 @@ def warm_start_params(m):
     return res
 
 
-# m1 = Prophet().fit(df_original_data)  # Fitting from scratch
-#
-# # diagnostics
-# df_cv = cross_validation(m1, initial='730 days', period='180 days', horizon='365 days')
-# df_p = performance_metrics(df_cv)
-#
-# print("df_cv")
-# print(df_cv.head())
-# print("df_p")
-# print(df_p.head())
-#
-# # you can load the model from json
-#  m1 = model_from_json(model_to_json(m1))
-#
-# print("Model 1 trained")
-
 def learn(old_data, new_data, holidays, model):
     df_original_data = pd.read_csv(old_data)
     df_retrain_data = pd.read_csv(new_data)
-
-    # # diagnostics
-    # df_cv = cross_validation(m1, initial='730 days', period='180 days', horizon='365 days')
-    # df_p = performance_metrics(df_cv)
-
-    # print("df_cv")
-    # print(df_cv.head())
-    # print("df_p")
-    # print(df_p.head())
 
     # load holidays
     holidays = pd.read_csv(holidays)
@@ -99,25 +65,12 @@ def learn(old_data, new_data, holidays, model):
 
     df = df_original_data.append(df_retrain_data)
 
-    # diagnostics
-    df_cv = cross_validation(m2, initial='130 days', period='45 days', horizon='65 days')
-    df_p = performance_metrics(df_cv)
-
-    # print("df_cv")
-    # print(df_cv.head())
-    # print("df_p")
-    # print(df_p.head())
-
-    # plot forecast
-    m2.plot(forecast)
-    pyplot.show()
-
-    # plot forecast components
-    m2.plot_components(forecast)
-    pyplot.show()
-
     pickle.dump(m2, open('new_model.pkl', 'wb'))
     print("New model saved as 'new_model.pkl ")
+
+    # create results folder
+    if not os.path.exists("results"):
+        os.makedirs("results")
 
     # log files
     iteration = str(pd.to_datetime('today').strftime("%Y%m%d-%H%M%S"))
@@ -126,9 +79,8 @@ def learn(old_data, new_data, holidays, model):
     # iteration folder path
     iteration_path = "results/" + folder_name + "/" + iteration
     # inside results/now date(YYYYMMDD)-time(HHMMSS)-iteration folder create folder named iteration number
-    if os.path != iteration_path:
+    if not os.path.exists(iteration_path):
         os.makedirs(iteration_path)
-    forecast.to_csv(iteration_path + "/forecast-" + iteration + ".csv", index=False)
 
     forecast.to_csv(iteration_path + "/forecast-" + iteration + ".csv", index=False)
 

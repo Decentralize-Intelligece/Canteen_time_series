@@ -39,11 +39,9 @@ def holiday_gen(start_date, end_date, data_range_start="2018-04-01 10:00:00", da
         # set end_date to data_range_end
         end_date = data_range_end
 
-
     # create dataframe from start_date to end_date in 15 minute intervals
     df = pd.DataFrame()
     df['ds'] = pd.date_range(start_date, end_date, freq='15T')
-
 
     return df
 
@@ -59,6 +57,7 @@ dates = [
     "19.10.2020-19.12.2020",
     "20.04.2020-18.07.2020",
 ]
+
 
 def gen_holidays(dates):
     """
@@ -89,6 +88,7 @@ def gen_holidays(dates):
 
     # return the dataframe
     return df
+
 
 # generate holidays
 df = gen_holidays(dates)

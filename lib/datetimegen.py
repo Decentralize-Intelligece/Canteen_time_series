@@ -1,5 +1,7 @@
-import pandas as pd
 import datetime
+
+import pandas as pd
+
 
 def generate_datetimes(x, start_datetime=None):
     if start_datetime is None:
