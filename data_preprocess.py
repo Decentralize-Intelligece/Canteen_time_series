@@ -1,12 +1,38 @@
 import json
 import csv
 import pandas as pd
+from datetime import datetime
+
+datetime_format = '%Y-%m-%d %H:%M:%S'
+threshold = 900  # in seconds
+
+
+def find_csv_breaking_points(filename, datetime_format, threshold):
+    breaking_points = []
+    with open(filename, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        header = next(reader)  # read the header row
+        data = sorted(reader,
+                      key=lambda x: datetime.strptime(x[0], datetime_format))  # sort the data by datetime column
+
+        prev_time = None
+        for i, row in enumerate(data):
+            current_time = datetime.strptime(row[0], datetime_format)
+            if prev_time is not None:
+                if abs(((current_time - prev_time).total_seconds())) > threshold:
+                    breaking_points.append(i)
+            prev_time = current_time
+    return breaking_points
+
+
+bp_indices = find_csv_breaking_points(filename, datetime_format, threshold)
+if len(bp_indices) == 0:
+    print("The dataset is continuous")
+else:
+    print("The dataset has", len(bp_indices), "breaking points at indices:", bp_indices)
 
 
 def json_to_csv(json_file_path):
-    import json
-    import csv
-
     # Load the JSON data
     with open(json_file_path) as json_file:
         data = json.load(json_file)
@@ -40,7 +66,7 @@ def json_to_csv(json_file_path):
         # Sort the DataFrame by the 'date' column
         df = df.sort_values(by='ds')
 
-        #*******************
+        # *******************
 
         # Set 'datetime' as the index of the DataFrame
         df = df.set_index('ds')
@@ -68,11 +94,9 @@ def json_to_csv(json_file_path):
 
         print(df.head(1000))
 
+        find_csv_breaking_points('processed_data.csv', datetime_format, threshold)
+
 
 if __name__ == "__main__":
     json_file_path = input("Enter the path to the JSON file: ")
     csv_file_path = json_to_csv(json_file_path)
-
-# D:\Git Hub Projects\Time Series Project\Project\data\unprocessed_data\interval_counts.json
-
-
