@@ -1,9 +1,14 @@
 import pickle
 
+import check_continuvity
 import train
 import predict
 import learn
+
+from data_preprocess import json_to_csv
+
 import pandas as pd
+
 
 
 # DF=[]
@@ -81,6 +86,15 @@ def learn_console():
 
     learn.learn(old_data, new_data)
 
+def process_console():
+    json_file_path = input("Enter the path to the JSON file: ")
+    csv_file_path = json_to_csv(json_file_path)
+    datetime_format = '%Y-%m-%d %H:%M:%S'
+    threshold = 900  # in seconds
+
+    breakpoints = check_continuvity.find_csv_breaking_points(csv_file_path,datetime_format,threshold)
+
+
 
 def switch_console(option):
     if option == 1:
@@ -89,6 +103,8 @@ def switch_console(option):
         predict_console()
     elif option == 3:
         learn_console()
+    elif option ==4:
+        process_console()
     else:
         print("Not a valid option")
 
@@ -99,5 +115,6 @@ def welcome_screen():
     print("     1 - train the model")
     print("     2 - predict")
     print("     3 - learn")
+    print("     4 - preprocess data")
     option = int(input("What do you want to do (enter the number) :"))
     switch_console(option)
