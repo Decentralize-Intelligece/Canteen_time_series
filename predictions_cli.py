@@ -1,9 +1,10 @@
 import pickle
 
-from sklearn.svm._libsvm import cross_validation
-from lib.datetimegen import generate_datetimes as dgt
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import pandas as pd
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.svm._libsvm import cross_validation
+
+from lib.datetimegen import generate_datetimes as dgt
 
 isNotValid = True
 days = 0
@@ -18,18 +19,17 @@ df = df[["ds", "y"]]
 # datetime column to datetime type
 df["ds"] = pd.to_datetime(df["ds"])
 
-while(isNotValid):
+while (isNotValid):
     try:
         print('Enter for how many days you need the forecast :')
         days = int(input())
-        isNotValid=False
+        isNotValid = False
 
     except:
         print('Enter a valid input....')
 
-
-#load model from the pickle file
-model =  pickle.load(open('model.pkl', 'rb'))
+# load model from the pickle file
+model = pickle.load(open('model.pkl', 'rb'))
 
 future = dgt(days, "2020-01-01")
 # save to csv
@@ -46,7 +46,7 @@ print(future.head())
 forecast = model.predict(future)
 
 # diagnostics
-df_cv = cross_validation(model, initial='730 days', period='180 days', horizon = '365 days')
+df_cv = cross_validation(model, initial='730 days', period='180 days', horizon='365 days')
 
 
 def performance_metrics(df_cv):
@@ -59,7 +59,6 @@ print("df_cv")
 print(df_cv.head())
 print("df_p")
 print(df_p.head())
-
 
 # summarize the forecast
 print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())

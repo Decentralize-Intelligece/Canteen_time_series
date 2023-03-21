@@ -22,9 +22,6 @@ def train_model(data, holidays):
     # datetime column to datetime type
     df["ds"] = pd.to_datetime(df["ds"])
 
-    # print(df.dtypes)
-    # print(df.head())
-
     # load holidays
     holidays = pd.read_csv(holidays)
     print("Holidays Loaded")
@@ -56,29 +53,13 @@ def train_model(data, holidays):
         'stan_backend': None,
     }
 
-    # add regressors
-    # model.add_regressor("y")
-
-    # Metrics
-    # R2:  0.383919577279893
-    # MSE:  2427.8544877382374
-    # MAE:  17.901745566393274
-
-    # R2:  0.4085147857617024
-    # MSE:  2330.9295002085705
-    # MAE:  18.468722578249313
-
     # fit the model
     print("Training the model")
 
     model = Prophet(**params).fit(df)  # Fit model with given params
     print("Model training completed")
 
-
-
     # log outputs
-
-    cutoffs = pd.to_datetime(['2020-06-01', '2021-06-01', '2022-06-01'])
 
     # create results folder
     if not os.path.exists("results"):
@@ -91,9 +72,7 @@ def train_model(data, holidays):
         os.makedirs("results/" + folder_name)
 
     # create a file named results.txt
-    results_file = open("results/" + folder_name + "/results.txt", "w+")
-
-    rmses = []  # Store the RMSEs for each params here
+    open("results/" + folder_name + "/results.txt", "w+")
 
     """LOG"""
     # generate a unique number for each run
@@ -107,7 +86,7 @@ def train_model(data, holidays):
         os.makedirs(iteration_path)
 
     # create results + iteration folder path + .txt file
-    results_file_itr = open(iteration_path + "/results.txt", "w+")
+    open(iteration_path + "/results.txt", "w+")
 
     # write iteration number, datetime of run to folder_name/results.txt
     with open("results/" + folder_name + "/results.txt", "a") as myfile:
@@ -133,7 +112,6 @@ def train_model(data, holidays):
         for key, value in params.items():
             results_file.write("%s: %s\n" % (key, value))
         results_file.write("\n\n")
-
 
     print("Model Testing...\n")
 
@@ -180,13 +158,12 @@ def train_model(data, holidays):
 
     # plot changepoints
     fig = model.plot(forecast)
-    a = add_changepoints_to_plot(fig.gca(), model, forecast)
+    add_changepoints_to_plot(fig.gca(), model, forecast)
     # save plot to image
     pyplot.savefig(iteration_path + "/changepoints-" + iteration + ".png")
     print("\nModel testing completed. Results saved to results folder.\n")
 
     pickle.dump(model, open('model.pkl', 'wb'))
     print("Model saved to model.pkl\n\n")
-
 
     return df

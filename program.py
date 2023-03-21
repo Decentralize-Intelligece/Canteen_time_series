@@ -1,13 +1,11 @@
 import pickle
 
-import train
-import predict
-import learn
-
-from data_preprocess import json_to_csv
-
 import pandas as pd
 
+import learn
+import predict
+import train
+from data_preprocess import json_to_csv
 
 
 def train_console():
@@ -23,8 +21,6 @@ def train_console():
     holidays = "data/" + holidays
 
     df = train.train_model(data, holidays)
-    # global DF
-    # DF = df
 
     return df
 
@@ -49,12 +45,24 @@ def predict_console():
     # datetime column to datetime type
     df["ds"] = pd.to_datetime(df["ds"])
 
+    # get the last datetime
+    last_date = df["ds"].iloc[-1]
+
+    print("Last date in the dataset is : " + str(last_date))
+    # calculate days from last date to today
+    num_of_days = (pd.to_datetime('today') - last_date).days
+    if num_of_days > 0:
+        print("Number of days from last date to today is : " + str(num_of_days))
+        print("Recommend to re-train/learn the model with new data if you need to have good forecast from today")
+    elif num_of_days < 0:
+        print("Your data set had future dates of : " + str(num_of_days) + " days")
+
     isNotValid = True
     days = 0
 
     while (isNotValid):
         try:
-            print('Enter for how many days you need the forecast :')
+            print('\nEnter for how many days you need the forecast from last date: ', end="")
             days = int(input())
             isNotValid = False
 
@@ -63,9 +71,7 @@ def predict_console():
 
     model = pickle.load(open('model.pkl', 'rb'))
 
-    predict.make_predictions(days, model, df)
-
-    # predict.make_predictions(days, model)
+    predict.make_predictions(days, model, num_of_days)
 
 
 def learn_console():
@@ -95,18 +101,19 @@ def process_console():
     json_file_path = input()
     csv_file_path = json_to_csv(json_file_path)
 
-    print("Done! The processed data is saved in the folder:" + csv_file_path)
+    print(
+        "\nDone! The processed data is saved in the folder:" + csv_file_path + " and to " + "data/processed_data.csv\n")
 
 
 def switch_console(option):
     if option == 1:
-        train_console()
-    elif option == 2:
-        predict_console()
-    elif option == 3:
-        learn_console()
-    elif option == 4:
         process_console()
+    elif option == 2:
+        train_console()
+    elif option == 3:
+        predict_console()
+    elif option == 4:
+        learn_console()
     elif option == 5:
         exit_console()
     else:
@@ -118,14 +125,16 @@ def exit_console():
     print("Exiting the program")
     print("___________________________________________________________")
 
+    exit()
+
 
 def welcome_screen():
     print("Time Series Solution")
     print("Options : ")
-    print("     1 - train the model")
-    print("     2 - predict")
-    print("     3 - learn")
-    print("     4 - preprocess data")
+    print("     1 - preprocess data")
+    print("     2 - train the model")
+    print("     3 - predict")
+    print("     4 - learn")
     print("     5 - exit")
     option = int(input("What do you want to do (enter the number) :"))
     switch_console(option)

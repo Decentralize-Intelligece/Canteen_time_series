@@ -1,13 +1,12 @@
+import os
+
 import pandas as pd
 from matplotlib import pyplot
 from prophet import Prophet
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from prophet.serialize import model_to_json, model_from_json
 from prophet.diagnostics import cross_validation, performance_metrics
-import itertools
-import numpy as np
-import os
 from prophet.plot import add_changepoints_to_plot
+from prophet.serialize import model_to_json
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 # load every column in pd head
 pd.set_option('display.max_columns', None)

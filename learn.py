@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot
 from prophet import Prophet
-from prophet.diagnostics import cross_validation, performance_metrics
 from prophet.plot import add_changepoints_to_plot
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 

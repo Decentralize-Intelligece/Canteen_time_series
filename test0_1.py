@@ -1,11 +1,12 @@
+import pickle
+
 import pandas as pd
 from matplotlib import pyplot
 from prophet import Prophet
-from lib.datetimegen import generate_datetimes as dgt
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from prophet.serialize import model_to_json, model_from_json
 from prophet.diagnostics import cross_validation, performance_metrics
-import pickle
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
+from lib.datetimegen import generate_datetimes as dgt
 
 # load every column in pd head
 pd.set_option('display.max_columns', None)
@@ -63,8 +64,8 @@ model = Prophet(
 # fit the model
 model.fit(df)
 
-#get the pickle file of the model
-pickle.dump(model,open('model.pkl', 'wb'))
+# get the pickle file of the model
+pickle.dump(model, open('model.pkl', 'wb'))
 
 future = dgt(1200, "2020-01-01")
 # save to csv
@@ -81,14 +82,13 @@ print(future.head())
 forecast = model.predict(future)
 
 # diagnostics
-df_cv = cross_validation(model, initial='730 days', period='180 days', horizon = '365 days')
+df_cv = cross_validation(model, initial='730 days', period='180 days', horizon='365 days')
 df_p = performance_metrics(df_cv)
 
 print("df_cv")
 print(df_cv.head())
 print("df_p")
 print(df_p.head())
-
 
 # summarize the forecast
 print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
@@ -101,8 +101,6 @@ print("Metrics")
 print("R2: ", r2_score(df["y"], forecast["yhat"][:len(df["y"])]))
 print("MSE: ", mean_squared_error(df["y"], forecast["yhat"][:len(df["y"])]))
 print("MAE: ", mean_absolute_error(df["y"], forecast["yhat"][:len(df["y"])]))
-
-
 
 # plot forecast
 model.plot(forecast)
@@ -117,7 +115,6 @@ from prophet.plot import add_changepoints_to_plot
 fig = model.plot(forecast)
 a = add_changepoints_to_plot(fig.gca(), model, forecast)
 pyplot.show()
-
 
 # with open('serialized_model.json', 'w') as fout:
 #     fout.write(model_to_json(m))  # Save model
