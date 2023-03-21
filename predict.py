@@ -10,12 +10,11 @@ import pandas as pd
 
 
 def make_predictions(days,model,df):
-    future = dgt(days, "2020-01-01")
-    # save to csv
-    future.to_csv("data/future_gen.csv", index=False)
+    # from df copy to df_future the last 24*4*days rows
+    df_future = df[len(df) - 24 * 4 * days:len(df)]
+    df_future.to_csv("data/future_gen.csv", index=False)
 
-
-    future = model.make_future_dataframe(periods=24*4*days, freq='D')
+    future = model.make_future_dataframe(periods=24*4*days, freq='15T')
 
     future.to_csv("data/future_gen_prophet.csv", index=False)
 
@@ -26,10 +25,6 @@ def make_predictions(days,model,df):
     forecast = model.predict(future)
 
     # forecast = forecast[len(forecast)-24*4*days -1 : len(forecast) - 1]
-
-
-
-
 
     # plot forecast
     model.plot(forecast)
