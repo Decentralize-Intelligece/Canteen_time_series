@@ -6,6 +6,7 @@ from datetime import datetime
 import pandas as pd
 
 datetime_format = '%Y-%m-%d %H:%M:%S'
+# datetime_format = '%d-%m-%Y %H:%M:%S'
 threshold = 900  # in seconds
 
 
@@ -14,8 +15,7 @@ def find_csv_breaking_points(filename, datetime_format, threshold):
     with open(filename, 'r') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader)  # read the header row
-        data = sorted(reader,
-                      key=lambda x: datetime.strptime(x[0], datetime_format))  # sort the data by datetime column
+        data = sorted(reader, key=lambda x: datetime.strptime(x[0], datetime_format))  # sort the data by datetime column
 
         prev_time = None
         for i, row in enumerate(data):
@@ -52,8 +52,9 @@ def json_to_csv(json_file_path):
     df = df.iloc[:, :2]
 
     # ds to datetime type
-    df["ds"] = pd.to_datetime(df["ds"])
-
+    # df["ds"] = pd.to_datetime(df["ds"])
+    # df["ds"] = pd.to_datetime(df["ds"]), format("%d.%m.%Y %H:%M:%S")
+    df["ds"] = pd.to_datetime(df["ds"], format="%d.%m.%Y %H:%M:%S")
     print("Sorting data...")
     # sort the dataframe by ds
     df = df.sort_values(by=['ds'])
